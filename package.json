@@ -11,21 +11,33 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.runTest"
+        "onCommand:extension.runSingleTest",
+        "onCommand:extension.runAllTests"
     ],
     "main": "./extension",
     "contributes": {
-        "commands": [{
-            "command": "extension.runTest",
-            "title": "Ruby Test"
-        }],
+        "commands": [
+            {
+                "command": "extension.runSingleTest",
+                "title": "Ruby Test: Run single test"
+            },
+            {
+                "command": "extension.runAllTests",
+                "title": "Ruby Test: Run all tests"
+            }
+        ],
         "configuration":{
             "title": "Ruby Test configuration",
             "properties": {
-                "rubyTest.testCommand": {
+                "rubyTest.testSingleFileCommand": {
                     "type": "string",
                     "default": "m $FILE:$LINE",
-                    "description": "Command to call to run test."
+                    "description": "Command to run a single test within a file."
+                },
+                "rubyTest.testAllFileCommand": {
+                    "type": "string",
+                    "default": "ruby -Itest $FILE",
+                    "description": "Command to run all tests within a file."
                 }
             }
         }
