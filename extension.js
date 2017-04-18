@@ -1,20 +1,26 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-var vscode = require('vscode');
+const vscode = require('vscode');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 function activate(context) {
+    let rubyTestTerminal = vscode.window.createTerminal('Ruby Test');
 
+    vscode.window.onDidCloseTerminal(function(terminal) {
+        if(terminal === rubyTestTerminal) {
+            rubyTestTerminal = vscode.window.createTerminal('Ruby Test');
+        }
+    });
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
     // The commandId parameter must match the command field in package.json
     const disposable = vscode.commands.registerCommand('extension.runSingleTest', function () {
-        runCommandFromConfigurationKey('testSingleFileCommand')
+        runCommandFromConfigurationKey('testSingleFileCommand', rubyTestTerminal)
     });
 
     const allTestDisposable = vscode.commands.registerCommand('extension.runAllTests', function() {
-        runCommandFromConfigurationKey('testAllFileCommand')
+        runCommandFromConfigurationKey('testAllFileCommand', rubyTestTerminal)
     });
 
     context.subscriptions.push(disposable);
@@ -27,7 +33,7 @@ function deactivate() {
 }
 exports.deactivate = deactivate;
 
-function runCommandFromConfigurationKey(configurationKey) {
+function runCommandFromConfigurationKey(configurationKey, terminal) {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
@@ -39,7 +45,6 @@ function runCommandFromConfigurationKey(configurationKey) {
         .replace('$FILE', vscode.workspace.asRelativePath(editor.document.fileName))
         .replace('$LINE', editor.selection.active.line + 1);
 
-    const terminal = vscode.window.createTerminal();
     terminal.sendText(command);
     terminal.show();
 }
